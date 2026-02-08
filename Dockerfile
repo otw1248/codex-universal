@@ -232,6 +232,11 @@ RUN --mount=type=cache,target=/root/.cargo/registry \
     && rustup toolchain install $RUST_VERSIONS --profile minimal --component rustfmt --component clippy \
     && rustup default ${RUST_VERSIONS%% *}
 
+ENV PATH=/root/.cargo/bin:$PATH
+
+RUN printf '%s\n' 'export PATH=/root/.cargo/bin:$PATH' > /etc/profile.d/cargo.sh \
+    && chmod 0644 /etc/profile.d/cargo.sh
+
 ### RUBY ###
 
 ARG RUBY_VERSIONS="3.4.4"
