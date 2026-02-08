@@ -73,9 +73,7 @@ jobs:
 
   manifest-and-attest:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    runs-on: 
-      group: codex-runners
-      labels: codex-linux-x64
+    runs-on: ubuntu-latest
     needs: [build-amd64, build-arm64]
     steps:
       - uses: docker/login-action@v3
