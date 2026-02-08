@@ -324,7 +324,7 @@ RUN chmod +x /opt/codex/setup_universal.sh
 COPY verify.sh /opt/verify.sh
 RUN chmod +x /opt/verify.sh \
     && PYTHON_VERSIONS="$PYTHON_VERSIONS" \
-        NODE_VERSIONS="24 22 20 18" \
+        NODE_VERSIONS="24 22" \
         RUST_VERSIONS="$RUST_VERSIONS" \
         GO_VERSIONS="$GO_VERSIONS" \
         SWIFT_VERSIONS="$SWIFT_VERSIONS" \
