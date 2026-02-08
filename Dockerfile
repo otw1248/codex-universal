@@ -118,7 +118,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 ### PYTHON ###
 
-ARG PYTHON_VERSIONS="3.14 3.13 3.12 3.11 3.10"
+ARG PYTHON_VERSIONS="3.13 3.12"
 
 # Install pyenv
 ENV PYENV_ROOT=/root/.pyenv
@@ -173,8 +173,6 @@ RUN --mount=type=cache,target=/root/.npm \
     && echo "prettier\neslint\ntypescript" > $NVM_DIR/default-packages \
     && . $NVM_DIR/nvm.sh \
     # The latest versions of npm aren't supported on node 18, so we install each set differently
-    && nvm install 18 && nvm use 18 && npm install -g npm@10.9 pnpm@10.12 && corepack enable && corepack install -g yarn \
-    && nvm install 20 && nvm use 20 && npm install -g npm@11.4 pnpm@10.12 && corepack enable && corepack install -g yarn \
     && nvm install 22 && nvm use 22 && npm install -g npm@11.4 pnpm@10.12 && corepack enable && corepack install -g yarn \
     && nvm install 24 && nvm use 24 && npm install -g npm@11.4 pnpm@10.12 && corepack enable && corepack install -g yarn \
     && nvm alias default "$NODE_VERSION" \
@@ -196,8 +194,8 @@ ARG GRADLE_VERSION=8.14
 ARG MAVEN_VERSION=3.9.10
 # OpenJDK 11 is not available for arm64. Codex Web only uses amd64 which
 # does support 11.
-ARG AMD_JAVA_VERSIONS="25 24 23 22 21 17 11"
-ARG ARM_JAVA_VERSIONS="25 24 23 22 21 17"
+ARG AMD_JAVA_VERSIONS="21 17"
+ARG ARM_JAVA_VERSIONS="21 17"
 
 RUN --mount=type=cache,target=/root/.cache/mise \
     JAVA_VERSIONS="$( [ "$TARGETARCH" = "arm64" ] && echo "$ARM_JAVA_VERSIONS" || echo "$AMD_JAVA_VERSIONS" )" \
@@ -209,7 +207,7 @@ RUN --mount=type=cache,target=/root/.cache/mise \
 
 ### SWIFT ###
 
-ARG SWIFT_VERSIONS="6.2 6.1 5.10"
+ARG SWIFT_VERSIONS="6.2"
 ENV SWIFTLY_BIN_DIR=/root/.swiftly/bin
 ENV PATH=$SWIFTLY_BIN_DIR:$PATH
 
@@ -225,7 +223,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ### RUST ###
 
-ARG RUST_VERSIONS="1.92.0 1.91.1 1.90.0 1.89.0 1.88.0 1.87.0 1.86.0 1.85.1 1.84.1 1.83.0"
+ARG RUST_VERSIONS="1.92.0 1.87.0"
 RUN --mount=type=cache,target=/root/.cargo/registry \
     --mount=type=cache,target=/root/.cargo/git \
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none \
@@ -236,7 +234,7 @@ RUN --mount=type=cache,target=/root/.cargo/registry \
 
 ### RUBY ###
 
-ARG RUBY_VERSIONS="3.4.4 3.3.8 3.2.3"
+ARG RUBY_VERSIONS="3.4.4"
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     --mount=type=cache,target=/root/.cache/mise \
@@ -264,7 +262,7 @@ RUN curl -L --fail https://github.com/bazelbuild/bazelisk/releases/download/${BA
 
 ### GO ###
 
-ARG GO_VERSIONS="1.25.1 1.24.3 1.23.8 1.22.12"
+ARG GO_VERSIONS="1.25.1 1.23.8"
 ARG GOLANG_CI_LINT_VERSION=2.1.6
 
 # Go defaults GOROOT to /usr/local/go - we just need to update PATH
@@ -277,7 +275,7 @@ RUN --mount=type=cache,target=/root/.cache/mise \
 
 ### PHP ###
 
-ARG PHP_VERSIONS="8.5 8.4 8.3 8.2"
+ARG PHP_VERSIONS="8.4"
 ENV PHPENV_ROOT=/root/.phpenv
 ENV PATH=/root/.phpenv/bin:/root/.phpenv/shims:$PATH
 
