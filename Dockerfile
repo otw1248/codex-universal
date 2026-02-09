@@ -226,22 +226,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ARG RUST_VERSIONS="1.92.0 1.87.0"
 ENV RUSTUP_HOME=/usr/local/rustup
 ENV CARGO_HOME=/usr/local/cargo
-ENV PATH=$CARGO_HOME/bin:$PATH
+ENV PATH=/usr/local/cargo/bin:$PATH
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/usr/local/cargo/git \
     mkdir -p "$RUSTUP_HOME" "$CARGO_HOME" \
-    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none \
-    && . "$CARGO_HOME/env" \
-    && echo 'source $CARGO_HOME/env' >> /etc/profile \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+        sh -s -- -y --profile minimal --default-toolchain none --no-modify-path \
     && rustup toolchain install $RUST_VERSIONS --profile minimal --component rustfmt --component clippy \
-    && rustup default ${RUST_VERSIONS%% *}
-
-RUN printf '%s\n' 'export PATH=$CARGO_HOME/bin:$PATH' > /etc/profile.d/cargo.sh \
-    && chmod 0644 /etc/profile.d/cargo.sh
-
-RUN grep -qxF 'source /etc/profile.d/cargo.sh' /etc/bash.bashrc \
-    || echo 'source /etc/profile.d/cargo.sh' >> /etc/bash.bashrc
+    && rustup default ${RUST_VERSIONS%% *} \
+    && for bin in rustup cargo rustc rustfmt cargo-clippy clippy-driver; do \
+             ln -sf "$CARGO_HOME/bin/$bin" /usr/local/bin/$bin; \
+         done
 
 ### RUBY ###
 
