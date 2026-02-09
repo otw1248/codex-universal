@@ -224,18 +224,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ### RUST ###
 
 ARG RUST_VERSIONS="1.92.0 1.87.0"
-RUN --mount=type=cache,target=/root/.cargo/registry \
-    --mount=type=cache,target=/root/.cargo/git \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none \
-    && . "$HOME/.cargo/env" \
-    && echo 'source $HOME/.cargo/env' >> /etc/profile \
+ENV RUSTUP_HOME=/usr/local/rustup
+ENV CARGO_HOME=/usr/local/cargo
+ENV PATH=$CARGO_HOME/bin:$PATH
+
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    mkdir -p "$RUSTUP_HOME" "$CARGO_HOME" \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none \
+    && . "$CARGO_HOME/env" \
+    && echo 'source $CARGO_HOME/env' >> /etc/profile \
     && rustup toolchain install $RUST_VERSIONS --profile minimal --component rustfmt --component clippy \
     && rustup default ${RUST_VERSIONS%% *}
 
-ENV PATH=/root/.cargo/bin:$PATH
-
-RUN printf '%s\n' 'export PATH=/root/.cargo/bin:$PATH' > /etc/profile.d/cargo.sh \
+RUN printf '%s\n' 'export PATH=$CARGO_HOME/bin:$PATH' > /etc/profile.d/cargo.sh \
     && chmod 0644 /etc/profile.d/cargo.sh
+
+RUN grep -qxF 'source /etc/profile.d/cargo.sh' /etc/bash.bashrc \
+    || echo 'source /etc/profile.d/cargo.sh' >> /etc/bash.bashrc
 
 ### RUBY ###
 
