@@ -221,31 +221,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
        done \
     && swiftly use "${SWIFT_VERSIONS%% *}"
 
-### RUST ###
 
 ### RUST ###
 ARG RUST_VERSIONS="1.92.0 1.87.0"
 
-# 1. INSTALL TO /opt TO AVOID THE VOLUME ISSUE
-ENV RUSTUP_HOME=/opt/rust/rustup
-ENV CARGO_HOME=/opt/rust/cargo
-ENV PATH=/opt/rust/cargo/bin:$PATH
-
-# 2. KEEP CACHE MOUNTS (Use the new path)
-# We persist the cache to speed up future builds, pointing to the new /opt location
-RUN --mount=type=cache,target=/opt/rust/cargo/registry \
-    --mount=type=cache,target=/opt/rust/cargo/git \
-    mkdir -p "$RUSTUP_HOME" "$CARGO_HOME" \
-    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
-       sh -s -- -y --profile minimal --default-toolchain none --no-modify-path \
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none \
+    && . "$HOME/.cargo/env" \
+    && echo 'source $HOME/.cargo/env' >> /etc/profile \
     && rustup toolchain install $RUST_VERSIONS --profile minimal --component rustfmt --component clippy \
-    && rustup default ${RUST_VERSIONS%% *} \
-    # 3. FIX PERMISSIONS (Allow all users to read/execute, root to write)
-    && chmod -R a+rx /opt/rust \
-    && chmod -R a+w /opt/rust/cargo/registry \
-    && for bin in rustup cargo rustc rustfmt cargo-clippy clippy-driver; do \
-           ln -sf "$CARGO_HOME/bin/$bin" /usr/local/bin/$bin; \
-       done
+    && rustup default ${RUST_VERSIONS%% *}
 
 ### RUBY ###
 
