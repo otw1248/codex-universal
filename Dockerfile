@@ -223,13 +223,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 
 ### RUST ###
+### RUST (FIXED & CLEANED) ###
 ARG RUST_VERSIONS="1.92.0 1.87.0"
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none \
-    && . "$HOME/.cargo/env" \
-    && echo 'source $HOME/.cargo/env' >> /etc/profile \
+# 1. SET ENV VARS (Move to /usr/local to avoid /root volume masking)
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+
+# 2. INSTALL & SYMLINK
+# We REMOVED the cache mounts here so we can chmod the directories permanently.
+RUN mkdir -p "$RUSTUP_HOME" "$CARGO_HOME" \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+       sh -s -- -y --profile minimal --default-toolchain none --no-modify-path \
     && rustup toolchain install $RUST_VERSIONS --profile minimal --component rustfmt --component clippy \
-    && rustup default ${RUST_VERSIONS%% *}
+    && rustup default ${RUST_VERSIONS%% *} \
+    # --- CRITICAL FIXES BELOW ---
+    # A. Fix Permissions: Allow all users to read/exec Rust, and write to registry
+    && chmod -R a+rx /usr/local/rustup /usr/local/cargo \
+    && mkdir -p /usr/local/cargo/registry \
+    && chmod -R a+w /usr/local/cargo/registry \
+    # B. Symlinks: The "Nuclear Option" for PATH issues.
+    # By linking to /usr/local/bin, we bypass the need for .bashrc or profile.d entirely.
+    && for bin in rustup cargo rustc rustfmt cargo-clippy clippy-driver; do \
+           ln -sf "$CARGO_HOME/bin/$bin" /usr/local/bin/$bin; \
+       done
 
 ### RUBY ###
 
