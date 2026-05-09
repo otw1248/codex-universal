@@ -67,7 +67,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         sqlite3=3.45.* \
         swig3.0=3.0.* \
         tk-dev=8.6.* \
-        tzdata=2025b-* \
+        tzdata=2026a-* \
         universal-ctags=5.9.* \
         unixodbc-dev=2.3.* \
         unzip=6.0-* \
@@ -224,7 +224,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ### RUST ###
 ### RUST (FIXED & CLEANED) ###
-ARG RUST_VERSIONS="1.92.0 1.87.0"
+ARG RUST_VERSIONS="1.95.0 1.94.0 1.93.0 1.92.0 1.87.0"
 
 # 1. SET ENV VARS (Move to /usr/local to avoid /root volume masking)
 ENV RUSTUP_HOME=/usr/local/rustup \
