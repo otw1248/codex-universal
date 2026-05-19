@@ -279,7 +279,7 @@ RUN curl -L --fail https://github.com/bazelbuild/bazelisk/releases/download/${BA
 
 ### GO ###
 
-ARG GO_VERSIONS="1.25.1 1.23.8"
+ARG GO_VERSIONS="1.26.2 1.23.8"
 ARG GOLANG_CI_LINT_VERSION=2.1.6
 
 # Go defaults GOROOT to /usr/local/go - we just need to update PATH
