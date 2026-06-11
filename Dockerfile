@@ -344,7 +344,6 @@ RUN chmod +x /opt/verify.sh \
         NODE_VERSIONS="24 22" \
         RUST_VERSIONS="$RUST_VERSIONS" \
         GO_VERSIONS="$GO_VERSIONS" \
-        SWIFT_VERSIONS="$SWIFT_VERSIONS" \
         RUBY_VERSIONS="$RUBY_VERSIONS" \
         PHP_VERSIONS="$PHP_VERSIONS" \
         JAVA_VERSIONS="$( [ "$TARGETARCH" = "arm64" ] && echo "$ARM_JAVA_VERSIONS" || echo "$AMD_JAVA_VERSIONS" )" \
