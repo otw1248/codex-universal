@@ -62,7 +62,11 @@ gradle --version | head -n 3
 mvn --version | head -n 1
 
 echo "- Swift:"
-swift --version
+if command -v swift >/dev/null 2>&1; then
+  swift --version
+else
+  echo "swift not installed; skipping"
+fi
 
 echo "- Ruby:"
 ruby --version
