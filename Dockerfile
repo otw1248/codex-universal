@@ -224,7 +224,7 @@ RUN --mount=type=cache,target=/root/.cache/mise \
 
 ### RUST ###
 ### RUST (FIXED & CLEANED) ###
-ARG RUST_VERSIONS="1.95.0 1.94.0 1.93.0 1.92.0 1.87.0"
+ARG RUST_VERSIONS="1.95.0 1.93.0 1.87.0"
 
 # 1. SET ENV VARS (Move to /usr/local to avoid /root volume masking)
 ENV RUSTUP_HOME=/usr/local/rustup \
